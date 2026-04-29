@@ -1,0 +1,36 @@
+# Python environment
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data and Models 
+data/*
+!data/.gitkeep
+models/*
+!models/.gitkeep
+
+# Large files specifically
+*.csv
+*.xlsx
+*.pkl
+*.h5
+*.joblib
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Flask/Web specifics
+instance/
+.webassets-cache
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Environment variables 
+.env
