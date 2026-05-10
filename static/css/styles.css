@@ -1,0 +1,113 @@
+body {
+  background-color: #b7bdf7;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.lexend-main {
+  font-family: "Lexend", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
+.upload-container {
+  width: 300px;
+  height: 300px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+  margin: 20px auto;
+}
+
+.upload-container.dragover {
+  background-color: #f0f8ff;
+  border-color: #007bff;
+}
+
+.upload-icon {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+#file-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+#file-name {
+  font-weight: bold;
+  color: #333;
+}
+
+.analyze-btn {
+  border-radius: 30px;
+  padding: 10px;
+  border: none;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.summary {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  align-items: stretch;
+}
+
+.container-2 {
+  padding: 20px 40px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.card {
+  border: 1px solid black;
+  border-radius: 20px;
+  padding: 5px 25px 5px 25px;
+  flex: 1;
+}
+
+.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  flex: 1;
+}
+
+.horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  flex: 4;
+}
+
+.sent-breakdown {
+  min-height: 400px;
+  position: relative;
+}
+
+.big-num {
+  font-size: 42pt;
+  text-align: center;
+}

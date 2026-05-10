@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <title>Customer Reviews Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="lexend-main">
+    <div class="container-2">
+      <h1>Summary</h1>
+
+      <div class="summary">
+        <div class="vertical">
+          <div class="total card">
+            <h3>Reviews analyzed</h3>
+            <h3 class="big-num">{{ total_count }}</h3>
+          </div>
+          <div class="avg-sent card">
+            <h3>Average sentiment score</h3>
+            <h3>{{ avg_score }}</h3>
+          </div>
+        </div>
+
+        <div class="horizontal">
+          <div class="sent-breakdown card">
+            <h3>Sentiment Breakdown</h3>
+            <canvas id="sentimentChart" width="400px" height="400px"> </canvas>
+          </div>
+          <div class="top-products card">
+            <h3>Top products</h3>
+          </div>
+        </div>
+      </div>
+      <div class="categories">
+        <div class="horizontal">
+          <div class="sent-breakdown card">
+            <h3>Sentiment by Category</h3>
+            <canvas id="categoryChart" width="200px" height="200px"> </canvas>
+          </div>
+          <div class="top-products card">
+            <h3>Key Phrases</h3>
+            <p>{{top_5_percent}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="section-3">
+        <div class="sent-over-time card">
+          <h3>Sentiment over Time</h3>
+          <canvas id="sentTimeChart" width="800px" height="400px"> </canvas>
+        </div>
+      </div>
+      <div class="section-4">
+        <div class="sent-over-time card">
+          <h3>Reviews</h3>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="chart1-data" type="application/json">
+      {
+        "labels1": {{ labels1 | safe }},
+        "values1": {{ values1 | safe }}
+      }
+    </script>
+    <script id="chart2-data" type="application/json">
+          {
+        "labels2": {{ labels2 | safe }},
+        "pos": {{ pos_values | safe }},
+        "neu": {{ neu_values | safe }},
+        "neg": {{ neg_values | safe }}
+      }
+    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>
