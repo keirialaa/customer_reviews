@@ -37,5 +37,5 @@ def process_upload_data(df):
         df["review_title"] = df["review_title"].fillna("")
         df["full_text"] = df["review_title"].astype(str) + " " + df["review_text"].astype(str)
 
-    return df[["product_name", "full_text"]]
+    return df
 

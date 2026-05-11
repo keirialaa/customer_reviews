@@ -95,4 +95,78 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     },
   });
+
+  //  Sentiment over time
+  const timeDataEl = document.getElementById("time-data");
+
+  if (timeDataEl) {
+    const { labels, pos, neu, neg } = JSON.parse(timeDataEl.textContent);
+    const ctxTime = document.getElementById("sentTimeChart");
+
+    new Chart(ctxTime, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Positive",
+            data: pos,
+            borderColor: "rgba(46, 204, 113, 1)", // Solid Green
+            backgroundColor: "rgba(46, 204, 113, 0.4)", // 0.4 Opacity Green
+            tension: 0.3,
+            fill: false,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Neutral",
+            data: neu,
+            borderColor: "rgba(241, 196, 15, 1)", // Solid Yellow
+            backgroundColor: "rgba(241, 196, 15, 0.4)", // 0.4 Opacity Yellow
+            tension: 0.3,
+            fill: false,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Negative",
+            data: neg,
+            borderColor: "rgba(231, 76, 60, 1)", // Solid Red
+            backgroundColor: "rgba(231, 76, 60, 0.4)", // 0.4 Opacity Red
+            tension: 0.3,
+            fill: false,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: "top",
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+            },
+            title: {
+              display: true,
+              text: "Review Count",
+            },
+          },
+          x: {
+            title: {
+              display: true,
+              text: "Month",
+            },
+          },
+        },
+      },
+    });
+  }
 });

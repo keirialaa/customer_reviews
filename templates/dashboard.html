@@ -56,7 +56,35 @@
       <div class="section-3">
         <div class="sent-over-time card">
           <h3>Sentiment over Time</h3>
-          <canvas id="sentTimeChart" width="800px" height="400px"> </canvas>
+
+          {% if has_time_data %}
+          <canvas id="sentTimeChart" width="800px" height="400px"></canvas>
+
+          <script id="time-data" type="application/json">
+            {
+              "labels": {{ time_labels | safe }},
+              "pos": {{ time_pos | safe }},
+              "neu": {{ time_neu | safe }},
+              "neg": {{ time_neg | safe }}
+            }
+          </script>
+          {% else %}
+          <div
+            class="no-data-overlay"
+            style="
+              height: 400px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #888;
+            "
+          >
+            <p>
+              No date data available to display trends. Upload a file with a
+              "review_date" column to see trends over time.
+            </p>
+          </div>
+          {% endif %}
         </div>
       </div>
       <div class="section-4">
