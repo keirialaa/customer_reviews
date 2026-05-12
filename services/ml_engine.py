@@ -88,27 +88,3 @@ def run_full_analysis(df):
     df["category"] = df["cluster_id"].map(c_labels_map).fillna("Miscellaneous")
 
     return df
-
-
-# summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-
-
-def generate_category_article(category_name, top_products, worst_product):
-    """
-    top_products: List of dicts [{'name': 'X', 'reviews': '...'}, ...]
-    worst_product: Dict {'name': 'Y', 'reviews': '...'}
-    """
-    article_content = f"## Best {category_name} of 2026\n\n"
-    
-    for product in top_products:
-        summary = summarizer(product['reviews'], max_length=60, min_length=20, do_sample=False)[0]['summary_text']
-        
-        article_content += f"### {product['name']}\n"
-        article_content += f"{summary}\n\n"
-
-    # Handle the worst product section
-    worst_summary = summarizer(worst_product['reviews'], max_length=50, min_length=20)[0]['summary_text']
-    article_content += f"### Avoid: {worst_product['name']}\n"
-    article_content += f"This product is ranked lowest in our analysis. Users primarily noted: {worst_summary}"
-    
-    return article_content

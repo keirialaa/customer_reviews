@@ -3,7 +3,7 @@ import os
 import pandas as pd 
 from flask import Flask, flash, render_template, request, redirect, url_for, jsonify
 from services.data_processor import allowed_file, validate_upload_file, process_upload_data
-from services.ml_engine import run_full_analysis, generate_category_article
+from services.ml_engine import run_full_analysis
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
