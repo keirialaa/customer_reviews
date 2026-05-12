@@ -11,15 +11,16 @@ A Python-based analytical tool that uses RoBERTa for sentiment analysis, K-Means
 
 ## Installation & Setup
 
-Clone the repository:
-git clone https://github.com/keirialaa/your-project.git
+- Clone the repository:
+  git clone https://github.com/keirialaa/your-project.git
 
-Install Dependencies:
-pip install -r requirements.txt
+- Install Dependencies:
+  pip install -r requirements.txt
 
-Set the entry point:
-export FLASK_APP=app.py
-flask run
+- Set the entry point:
+  export FLASK_APP=app.py.
+
+  flask run
 
 ## Project Structure
 
