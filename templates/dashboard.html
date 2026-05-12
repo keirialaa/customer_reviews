@@ -14,101 +14,127 @@
       href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
   </head>
   <body class="lexend-main">
-    <div class="container-2">
-      <h1>Summary</h1>
-
-      <div class="summary">
-        <div class="vertical">
-          <div class="total card">
-            <h3>Reviews analyzed</h3>
-            <h3 class="big-num">{{ total_count }}</h3>
+    <div id="loading-state">
+      <div class="container-2">
+        <div
+          class="card"
+          id="loading"
+          style="text-align: center; padding: 100px 20px"
+        >
+          <h2 class="pulse">Analyzing Reviews...</h2>
+          <div class="progress-container">
+            <div id="progress-fill"></div>
           </div>
-          <div class="avg-sent card">
-            <h3>Average sentiment score</h3>
-            <h3>{{ avg_score }}</h3>
-          </div>
-        </div>
-
-        <div class="horizontal">
-          <div class="sent-breakdown card">
-            <h3>Sentiment Breakdown</h3>
-            <canvas id="sentimentChart" width="400px" height="400px"> </canvas>
-          </div>
-          <div class="top-products card">
-            <h3>Top products</h3>
-          </div>
+          <p id="status-text">
+            Our engine is processing your data. Please wait.
+          </p>
         </div>
       </div>
-      <div class="categories">
-        <div class="horizontal">
-          <div class="sent-breakdown card">
-            <h3>Sentiment by Category</h3>
-            <canvas id="categoryChart" width="200px" height="200px"> </canvas>
+    </div>
+
+    <div id="dashboard-content" style="display: none">
+      <div class="container-2">
+        <h1>Dashboard</h1>
+
+        <div class="summary">
+          <div class="vertical">
+            <div class="total card">
+              <h3>Reviews Analyzed</h3>
+              <h3 class="big-num" id="total-reviews">0</h3>
+            </div>
+            <div class="avg-sent card">
+              <h3>Average Sentiment Score</h3>
+              <h3 class="big-num" id="avg-score-display">0</h3>
+            </div>
           </div>
-          <div class="top-products card">
-            <h3>Key Phrases</h3>
-            <p>{{top_5_percent}}</p>
+
+          <div class="horizontal">
+            <div class="sent-breakdown card">
+              <h3>Sentiment Breakdown</h3>
+              <canvas id="sentimentChart"></canvas>
+            </div>
+            <div class="sent-breakdown card">
+              <h3>Sentiment by Category</h3>
+              <canvas id="categoryChart"></canvas>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="section-3">
-        <div class="sent-over-time card">
-          <h3>Sentiment over Time</h3>
 
-          {% if has_time_data %}
-          <canvas id="sentTimeChart" width="800px" height="400px"></canvas>
-
-          <script id="time-data" type="application/json">
-            {
-              "labels": {{ time_labels | safe }},
-              "pos": {{ time_pos | safe }},
-              "neu": {{ time_neu | safe }},
-              "neg": {{ time_neg | safe }}
-            }
-          </script>
-          {% else %}
-          <div
-            class="no-data-overlay"
-            style="
-              height: 400px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: #888;
-            "
-          >
-            <p>
-              No date data available to display trends. Upload a file with a
-              "review_date" column to see trends over time.
-            </p>
+        <div class="categories">
+          <div class="horizontal">
+            <div class="top-products card">
+              <div class="card-header">
+                <h3>Best Products</h3>
+                <div class="tab-toggle">
+                  <button
+                    onclick="toggleRankings('best', 'overall', event)"
+                    class="tab-btn active lexend-main"
+                  >
+                    Overall
+                  </button>
+                  <button
+                    onclick="toggleRankings('best', 'category', event)"
+                    class="tab-btn lexend-main"
+                  >
+                    By Category
+                  </button>
+                </div>
+              </div>
+              <div id="best-products-list" class="product-list"></div>
+            </div>
+            <div class="worst-products card">
+              <div class="card-header">
+                <h3>Worst Products</h3>
+                <div class="tab-toggle">
+                  <button
+                    onclick="toggleRankings('worst', 'overall', event)"
+                    class="tab-btn active lexend-main"
+                  >
+                    Overall
+                  </button>
+                  <button
+                    onclick="toggleRankings('worst', 'category', event)"
+                    class="tab-btn lexend-main"
+                  >
+                    By Category
+                  </button>
+                </div>
+              </div>
+              <div id="worst-products-list" class="product-list"></div>
+            </div>
           </div>
-          {% endif %}
         </div>
-      </div>
-      <div class="section-4">
-        <div class="sent-over-time card">
-          <h3>Reviews</h3>
+
+        <div class="section-3">
+          <div class="sent-over-time card">
+            <h3>Sentiment over Time</h3>
+            <div id="time-chart-wrapper">
+              <canvas id="sentTimeChart"></canvas>
+            </div>
+            <div
+              id="no-time-data"
+              style="display: none"
+              class="no-data-overlay"
+            >
+              <p>No date data available to display trends.</p>
+            </div>
+          </div>
+        </div>
+        <div class="section-4">
+          <div class="summary card">
+            <h3>Summary</h3>
+          </div>
         </div>
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script id="chart1-data" type="application/json">
-      {
-        "labels1": {{ labels1 | safe }},
-        "values1": {{ values1 | safe }}
-      }
-    </script>
-    <script id="chart2-data" type="application/json">
-          {
-        "labels2": {{ labels2 | safe }},
-        "pos": {{ pos_values | safe }},
-        "neu": {{ neu_values | safe }},
-        "neg": {{ neg_values | safe }}
-      }
-    </script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
   </body>
 </html>

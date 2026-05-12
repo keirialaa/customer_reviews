@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // File Upload Logic
-  const dropZone = document.getElementById("drop-zone");
+  // File upload logic
   const fileInput = document.getElementById("file-input");
   const fileNameDisplay = document.getElementById("file-name");
+  const hint = document.querySelector(".hint");
 
   if (fileInput) {
     fileInput.addEventListener("change", () => {
@@ -10,25 +10,132 @@ document.addEventListener("DOMContentLoaded", () => {
         fileInput.files.length > 0
           ? fileInput.files[0].name
           : "No file selected";
+      hint.classList.add("hidden");
     });
   }
 
-  // Chart Logic
-  const chartDataEl1 = document.getElementById("chart1-data");
-  const { labels1, values1 } = JSON.parse(chartDataEl1.textContent);
-  const chartDataEl2 = document.getElementById("chart2-data");
-  const { labels2, pos, neu, neg } = JSON.parse(chartDataEl2.textContent);
+  // Async analysis logic
+  const loader = document.getElementById("loading-state");
+  const dashboard = document.getElementById("dashboard-content");
+  const statusText = document.getElementById("status-text");
 
-  const ctx1 = document.getElementById("sentimentChart");
+  if (loader) {
+    fetch("/analyze")
+      .then((response) => {
+        if (!response.ok)
+          throw new Error("Analysis failed. Please check your CSV format.");
+        return response.json();
+      })
+      .then((data) => {
+        loader.style.display = "none";
+        dashboard.style.display = "block";
 
-  new Chart(ctx1, {
+        // Update stats
+        if (data.total_count !== undefined) {
+          document.getElementById("total-reviews").innerText = data.total_count;
+        }
+        if (data.avg_score !== undefined) {
+          document.getElementById("avg-score-display").innerText =
+            data.avg_score;
+        }
+
+        // Render charts
+        renderSentimentPie(data.pie);
+        renderCategoryStackedBar(data.stacked);
+
+        if (data.time_series && data.time_series.has_time) {
+          renderTimeLineChart(data.time_series);
+        }
+
+        // Update product list
+        updateRankingsUI(data);
+      })
+      .catch((err) => {
+        console.error("Error:", err);
+        statusText.innerHTML = `<span style="color: #e74c3c;">${err.message}</span>`;
+      });
+  }
+});
+
+let rankingsData = null;
+
+function updateRankingsUI(data) {
+  rankingsData = data.rankings;
+  renderList("best", "overall");
+  renderList("worst", "overall");
+}
+
+function renderList(type, mode) {
+  const container = document.getElementById(`${type}-products-list`);
+  if (!container || !rankingsData) return;
+
+  container.innerHTML = "";
+
+  if (mode === "overall") {
+    const products = rankingsData.overall[type];
+    if (!products || products.length === 0) {
+      container.innerHTML = "<p class='no-data'>No products met threshold.</p>";
+      return;
+    }
+
+    products.forEach((name, index) => {
+      container.innerHTML += `
+        <div class="product-item">
+            <span class="rank-num">#${index + 1}</span>
+            <span class="product-name">${name}</span>
+        </div>`;
+    });
+  } else {
+    const catEntries = Object.entries(rankingsData.by_category);
+    if (catEntries.length === 0) {
+      container.innerHTML = "<p class='no-data'>No category data.</p>";
+      return;
+    }
+
+    catEntries.forEach(([cat, items]) => {
+      const productNames = items[type].join(", ");
+      if (productNames) {
+        container.innerHTML += `
+            <div class="category-group">
+                <strong class="cat-label">${cat}</strong>
+                <div class="product-item">${productNames}</div>
+            </div>`;
+      }
+    });
+  }
+}
+
+function toggleRankings(type, mode, event) {
+  renderList(type, mode);
+
+  if (!event || !event.currentTarget) {
+    console.warn("Toggle function called without a valid event object.");
+    return;
+  }
+
+  const btn = event.currentTarget;
+  const container = btn.parentElement;
+
+  if (container) {
+    container
+      .querySelectorAll(".tab-btn")
+      .forEach((s) => s.classList.remove("active"));
+    btn.classList.add("active");
+  }
+}
+
+// Chart rendering functions
+function renderSentimentPie(pieData) {
+  const ctx = document.getElementById("sentimentChart");
+  if (!ctx) return;
+
+  new Chart(ctx, {
     type: "pie",
     data: {
-      labels: labels1, // ["Positive", "Neutral", "Negative"]
+      labels: pieData.labels,
       datasets: [
         {
-          label: "# of Reviews",
-          data: values1,
+          data: pieData.values,
           backgroundColor: [
             "rgba(46, 204, 113, 0.4)",
             "rgba(241, 196, 15, 0.4)",
@@ -44,129 +151,98 @@ document.addEventListener("DOMContentLoaded", () => {
       ],
     },
     options: {
-      scales: {},
-      plugins: {
-        legend: {
-          position: "bottom",
-        },
-      },
+      plugins: { legend: { position: "bottom" } },
       responsive: true,
       maintainAspectRatio: true,
     },
   });
+}
 
-  const ctx2 = document.getElementById("categoryChart");
-  new Chart(ctx2, {
+function renderCategoryStackedBar(stackedData) {
+  const ctx = document.getElementById("categoryChart");
+  if (!ctx) return;
+
+  new Chart(ctx, {
     type: "bar",
     data: {
-      labels: labels2,
+      labels: stackedData.labels,
       datasets: [
         {
           label: "Positive",
-          data: pos,
+          data: stackedData.pos,
           backgroundColor: "rgba(46, 204, 113, 0.4)",
           borderColor: "rgba(46, 204, 113, 1)",
           borderWidth: 1,
         },
         {
           label: "Neutral",
-          data: neu,
+          data: stackedData.neu,
           backgroundColor: "rgba(241, 196, 15, 0.4)",
           borderColor: "rgba(241, 196, 15, 1)",
           borderWidth: 1,
         },
         {
           label: "Negative",
-          data: neg,
+          data: stackedData.neg,
           backgroundColor: "rgba(231, 76, 60, 0.4)",
-          borderColor: "rgba(231, 76, 60, 1)", // Solid border
+          borderColor: "rgba(231, 76, 60, 1)",
           borderWidth: 1,
         },
       ],
     },
     options: {
-      scales: {
-        x: { stacked: true },
-        y: { stacked: true, beginAtZero: true },
-      },
+      scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } },
       responsive: true,
+      maintainAspectRatio: false,
+    },
+  });
+}
+
+function renderTimeLineChart(timeData) {
+  const ctx = document.getElementById("sentTimeChart");
+  if (!ctx) return;
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: timeData.labels,
+      datasets: [
+        {
+          label: "Positive",
+          data: timeData.pos,
+          borderColor: "rgba(46, 204, 113, 0.4)",
+          backgroundColor: "rgba(46, 204, 113, 0.4)",
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: "Neutral",
+          data: timeData.neu,
+          borderColor: "rgba(241, 196, 15, 0.4)",
+          backgroundColor: "rgba(241, 196, 15, 0.4)",
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: "Negative",
+          data: timeData.neg,
+          borderColor: "rgba(231, 76, 60, 0.4)",
+          backgroundColor: "rgba(231, 76, 60, 0.4)",
+          tension: 0.3,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: "top" },
+        legend: { labels: { lineWidth: 1, padding: 20 } },
+      },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: "Reviews" } },
+        x: { title: { display: true, text: "Month" } },
       },
     },
   });
-
-  //  Sentiment over time
-  const timeDataEl = document.getElementById("time-data");
-
-  if (timeDataEl) {
-    const { labels, pos, neu, neg } = JSON.parse(timeDataEl.textContent);
-    const ctxTime = document.getElementById("sentTimeChart");
-
-    new Chart(ctxTime, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Positive",
-            data: pos,
-            borderColor: "rgba(46, 204, 113, 1)", // Solid Green
-            backgroundColor: "rgba(46, 204, 113, 0.4)", // 0.4 Opacity Green
-            tension: 0.3,
-            fill: false,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-          },
-          {
-            label: "Neutral",
-            data: neu,
-            borderColor: "rgba(241, 196, 15, 1)", // Solid Yellow
-            backgroundColor: "rgba(241, 196, 15, 0.4)", // 0.4 Opacity Yellow
-            tension: 0.3,
-            fill: false,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-          },
-          {
-            label: "Negative",
-            data: neg,
-            borderColor: "rgba(231, 76, 60, 1)", // Solid Red
-            backgroundColor: "rgba(231, 76, 60, 0.4)", // 0.4 Opacity Red
-            tension: 0.3,
-            fill: false,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            position: "top",
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1,
-            },
-            title: {
-              display: true,
-              text: "Review Count",
-            },
-          },
-          x: {
-            title: {
-              display: true,
-              text: "Month",
-            },
-          },
-        },
-      },
-    });
-  }
-});
+}
