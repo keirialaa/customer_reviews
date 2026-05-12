@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Reviews Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+    />
+  </head>
+  <body class="lexend-main">
+    <div class="container">
+      <div class="index-text">
+        <h1 id="title">Instant Sentiment Analytics for Your Business</h1>
+        <div class="index-paragraphs">
+          <p id="first-p">
+            Upload your customer reviews to generate instant sentiment
+            breakdowns, category performance, and trend reports.
+          </p>
+          <p id="second-p">
+            Make sure your data is in a CSV file and has the following required
+            columns:
+            <code>product_name</code>, <code>review_text</code>.
+          </p>
+          <p>
+            Optional columns: <code>review_date</code> if you want to see trends
+            over time, <code>rating</code> if the product rating (1-5) is
+            available.
+          </p>
+        </div>
+      </div>
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <div class="upload-container" id="drop-zone">
+          <div class="upload-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="#4758fc"
+              class="size-6"
+              width="48"
+              height="48"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+              />
+            </svg>
+          </div>
+
+          <p id="file-name">No file selected</p>
+          <p class="hint">Drag & drop or click to upload</p>
+
+          <input
+            type="file"
+            name="file"
+            id="file-input"
+            accept=".csv"
+            required
+          />
+        </div>
+
+        <button type="submit" class="analyze-btn lexend-main">
+          Analyze Reviews
+        </button>
+      </form>
+    </div>
+    <script src="../static/js/script.js"></script>
+  </body>
+</html>
