@@ -25,7 +25,6 @@ notebooks/               # Model training & experimentation
   clustering.ipynb
   review_summarization.ipynb
 templates/, static/       # Dashboard UI
-docs/Project Report.pdf   # Write-up of the approach and findings
 ```
 
 ## Installation & Setup
