@@ -1,12 +1,15 @@
 import json
-import os 
-import pandas as pd 
+import os
+import pandas as pd
+from dotenv import load_dotenv
 from flask import Flask, flash, render_template, request, redirect, url_for, jsonify
 from services.data_processor import allowed_file, validate_upload_file, process_upload_data
 from services.ml_engine import run_full_analysis
 
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = "supersecretkey"
+app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
 
 def get_product_rankings(data, min_reviews=1): 

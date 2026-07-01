@@ -8,7 +8,6 @@ from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
 
 load_dotenv()
-HF_TOKEN = os.getenv("HF_TOKEN")
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 MODEL_PATH = "models/sentiment_model"
 
@@ -35,10 +34,10 @@ def get_professional_label(text):
                 {"role": "system", "content": "You are a retail data expert. Your task is to provide a single, professional 2-3 word category name that summarizes a list of products. Return ONLY the category name."},
                 {"role": "user", "content": f"Product List:\n{text}"}
             ],
-            temperature=0 
+            temperature=0
         )
         return (response.choices[0].message.content or "").strip()
-    except:
+    except Exception:
         return "Uncategorized"
 
 
