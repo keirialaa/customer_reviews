@@ -1,3 +1,4 @@
+<img width="1578" height="978" alt="Screenshot 2026-07-01 at 15 43 42" src="https://github.com/user-attachments/assets/2f0522c5-3d03-4b80-a366-4f6596946b08" />
 # Customer Review Insights Dashboard
 
 A Python-based analytical tool that uses RoBERTa for sentiment analysis, K-Means clustering for automated product categorization, and BART for abstractive review summarization.
@@ -83,3 +84,6 @@ pytest
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+<img width="1578" height="978" alt="Screenshot 2026-07-01 at 15 43 42" src="https://github.com/user-attachments/assets/326db742-4908-450d-9946-2085cb448b45" />
+
